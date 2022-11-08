@@ -9,7 +9,7 @@ fi
 
 # run the tests
 echo "running ioredis tests"
-docker run -i ioredis-test ./run_tests.sh
+docker run -i ioredis-test
 if [ $? -ne 0 ];then
 	echo "some tests failed - please look at the output from this run"
 	exit 1
