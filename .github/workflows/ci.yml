@@ -38,7 +38,7 @@ jobs:
     strategy:
       matrix:
         # Test of these containers
-        container: ["ubuntu-dev:20", "alpine-dev:latest"]
+        container: ["ubuntu-dev:20"]
     timeout-minutes: 30
     container:
       image: ghcr.io/romange/${{ matrix.container }}
@@ -59,6 +59,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
+            .
             ~/.ccache
             ${{github.workspace}}/build/_deps
           key: ${{ runner.os }}-deps-${{ github.base_ref }}-${{ github.sha }}
@@ -82,3 +83,11 @@ jobs:
           #GLOG_logtostderr=1 GLOG_vmodule=transaction=1,engine_shard_set=1
           GLOG_logtostderr=1 GLOG_vmodule=rdb_load=1,rdb_save=2,snapshot=2 ctest -V -L DFLY
           # GLOG_logtostderr=1 GLOG_vmodule=transaction=1,engine_shard_set=1 CTEST_OUTPUT_ON_FAILURE=1 ninja server/test
+      - name: Run dragonfly in the background
+        run: |
+          cd ${{github.workspace}}/build
+          ./dragonfly &
+      - name: ioredis docker
+        run: |
+          cd tests/integration
+          ./run_ioredis_on_docker.sh
